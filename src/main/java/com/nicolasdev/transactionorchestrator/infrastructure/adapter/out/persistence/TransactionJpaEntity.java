@@ -37,7 +37,7 @@ public class TransactionJpaEntity {
     @JoinColumn(name = "payment_method_id", nullable = false)
     private PaymentMethodJpaEntity paymentMethod;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id", nullable = false)
     private CustomerJpaEntity customer;
 
