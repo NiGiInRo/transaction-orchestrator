@@ -3,6 +3,7 @@ package com.nicolasdev.transactionorchestrator.infrastructure.adapter.in.rest;
 import com.nicolasdev.transactionorchestrator.domain.model.Customer;
 import com.nicolasdev.transactionorchestrator.domain.model.Transaction;
 import com.nicolasdev.transactionorchestrator.domain.ports.in.CreateTransactionUseCase;
+import com.nicolasdev.transactionorchestrator.domain.ports.in.GetTransactionUseCase;
 import com.nicolasdev.transactionorchestrator.infrastructure.adapter.in.rest.dto.request.TransactionRequest;
 import com.nicolasdev.transactionorchestrator.infrastructure.adapter.in.rest.dto.response.ApiResponse;
 import com.nicolasdev.transactionorchestrator.infrastructure.adapter.in.rest.dto.response.TransactionResponse;
@@ -10,14 +11,19 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/v1/transactions")
 public class TransactionController {
 
     private final CreateTransactionUseCase createTransactionUseCase;
+    private final GetTransactionUseCase getTransactionUseCase;
 
-    public TransactionController(CreateTransactionUseCase createTransactionUseCase) {
+    public TransactionController(CreateTransactionUseCase createTransactionUseCase,
+                                 GetTransactionUseCase getTransactionUseCase) {
         this.createTransactionUseCase = createTransactionUseCase;
+        this.getTransactionUseCase = getTransactionUseCase;
     }
 
     @PostMapping
@@ -28,7 +34,12 @@ public class TransactionController {
         return ApiResponse.ok(toResponse(result));
     }
 
-    // ── Mapeo Request → Dominio ──────────────────────────────────────────────
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<TransactionResponse> getById(@PathVariable UUID id) {
+        Transaction result = getTransactionUseCase.getById(id);
+        return ApiResponse.ok(toResponse(result));
+    }
 
     private Transaction toDomain(TransactionRequest request) {
         return Transaction.builder()
@@ -59,8 +70,6 @@ public class TransactionController {
                 .secondLastName(request.getSecondLastName())
                 .build();
     }
-
-    // ── Mapeo Dominio → Response ─────────────────────────────────────────────
 
     private TransactionResponse toResponse(Transaction transaction) {
         return TransactionResponse.builder()

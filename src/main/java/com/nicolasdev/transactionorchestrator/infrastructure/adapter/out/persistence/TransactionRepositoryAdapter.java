@@ -25,17 +25,12 @@ public class TransactionRepositoryAdapter implements TransactionRepositoryPort {
 
     @Override
     public Transaction save(Transaction transaction) {
-        // Buscar el método de pago en el catálogo — debe existir en BD
         PaymentMethodJpaEntity paymentMethod = paymentMethodRepository
                 .findById(transaction.getPaymentMethodId())
                 .orElseThrow(() -> new ValidationException(
                         "008", "Método de pago no soportado: " + transaction.getPaymentMethodId()));
 
-        // Convertir el customer de dominio a entidad JPA
         CustomerJpaEntity customerJpa = mapper.toCustomerJpaEntity(transaction.getCustomer());
-
-        // Construir la entidad JPA completa y persistir
-        // El customer se guarda en cascada junto con la transacción
         TransactionJpaEntity entity = mapper.toJpaEntity(transaction, customerJpa, paymentMethod);
         TransactionJpaEntity saved = transactionRepository.save(entity);
 

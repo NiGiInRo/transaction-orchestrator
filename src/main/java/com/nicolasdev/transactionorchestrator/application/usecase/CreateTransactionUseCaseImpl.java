@@ -30,11 +30,9 @@ public class CreateTransactionUseCaseImpl implements CreateTransactionUseCase {
     @Override
     public Transaction create(Transaction transaction) {
         validate(transaction);
-
         transaction.setId(UUID.randomUUID());
         transaction.setStatus(TransactionStatus.PENDING);
         transaction.setProcessedAt(LocalDateTime.now());
-
         Transaction saved = repositoryPort.save(transaction);
         return providerPort.dispatch(saved);
     }
@@ -47,12 +45,10 @@ public class CreateTransactionUseCaseImpl implements CreateTransactionUseCase {
         requireNonBlank(transaction.getPaymentMethodId(), "payment_method_id");
         requireNonBlank(transaction.getWebhookUrl(), "webhook_url");
         requireNonBlank(transaction.getRedirectUrl(), "redirect_url");
-
         if (transaction.getCustomer() == null) {
             throw new ValidationException("001", "customer es requerido");
         }
         requireNonBlank(transaction.getCustomer().getEmail(), "customer.email");
-
         validateEmail(transaction.getCustomer().getEmail());
         validateCurrency(transaction.getCurrency());
         validateCountry(transaction.getCountry());
