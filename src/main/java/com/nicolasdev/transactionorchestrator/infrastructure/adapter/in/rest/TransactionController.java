@@ -7,6 +7,9 @@ import com.nicolasdev.transactionorchestrator.domain.ports.in.GetTransactionUseC
 import com.nicolasdev.transactionorchestrator.infrastructure.adapter.in.rest.dto.request.TransactionRequest;
 import com.nicolasdev.transactionorchestrator.infrastructure.adapter.in.rest.dto.response.ApiResponse;
 import com.nicolasdev.transactionorchestrator.infrastructure.adapter.in.rest.dto.response.TransactionResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +18,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/v1/transactions")
+@Tag(name = "Transactions", description = "Operaciones sobre transacciones de pago")
 public class TransactionController {
 
     private final CreateTransactionUseCase createTransactionUseCase;
@@ -28,6 +32,12 @@ public class TransactionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Crear transacción", description = "Valida, persiste y despacha una transacción al proveedor de pago")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Transacción creada exitosamente"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Datos inválidos o faltantes"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     public ApiResponse<TransactionResponse> create(@Valid @RequestBody TransactionRequest request) {
         Transaction transaction = toDomain(request);
         Transaction result = createTransactionUseCase.create(transaction);
@@ -36,6 +46,12 @@ public class TransactionController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Consultar transacción", description = "Retorna el detalle de una transacción por su ID")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Transacción encontrada"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Transacción no encontrada"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     public ApiResponse<TransactionResponse> getById(@PathVariable UUID id) {
         Transaction result = getTransactionUseCase.getById(id);
         return ApiResponse.ok(toResponse(result));
