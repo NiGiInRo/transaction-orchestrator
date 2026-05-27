@@ -33,8 +33,6 @@ class CreateTransactionUseCaseImplTest {
     @InjectMocks
     private CreateTransactionUseCaseImpl useCase;
 
-    // ── Camino feliz ────────────────────────────────────────────────────────
-
     @Test
     void create_shouldReturnApprovedTransaction_whenInputIsValid() {
         Transaction input = buildValidTransaction();
@@ -54,8 +52,6 @@ class CreateTransactionUseCaseImplTest {
         verify(repositoryPort).save(any());
         verify(providerPort).dispatch(any());
     }
-
-    // ── Casos de error ──────────────────────────────────────────────────────
 
     @Test
     void create_shouldThrow002_whenEmailIsInvalid() {
@@ -86,8 +82,6 @@ class CreateTransactionUseCaseImplTest {
                 .isInstanceOf(ValidationException.class)
                 .extracting("code").isEqualTo("003");
     }
-
-    // ── Builder de datos de prueba ──────────────────────────────────────────
 
     private Transaction buildValidTransaction() {
         Customer customer = Customer.builder()

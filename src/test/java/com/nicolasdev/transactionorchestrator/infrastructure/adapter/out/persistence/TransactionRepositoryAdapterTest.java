@@ -28,7 +28,6 @@ class TransactionRepositoryAdapterTest {
 
     @BeforeEach
     void setUp() {
-        // Insertar método de pago en el catálogo antes de cada test
         paymentMethodRepository.save(PaymentMethodJpaEntity.builder()
                 .id("PSE")
                 .name("PSE — Pagos Seguros en Línea")
@@ -65,8 +64,6 @@ class TransactionRepositoryAdapterTest {
 
         assertThat(found).isEmpty();
     }
-
-    // ── Builder de datos de prueba ──────────────────────────────────────────
 
     private Transaction buildValidTransaction() {
         Customer customer = Customer.builder()

@@ -10,8 +10,6 @@ public class MockPaymentProviderAdapter implements PaymentProviderPort {
 
     @Override
     public Transaction dispatch(Transaction transaction) {
-        // Simula la respuesta exitosa de un proveedor de pagos externo.
-        // En producción, aquí iría la llamada HTTP al proveedor real (PSE, Stripe, etc.)
         transaction.setStatus(TransactionStatus.APPROVED);
         return transaction;
     }

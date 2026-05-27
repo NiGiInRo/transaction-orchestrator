@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class TransactionMapper {
 
-    // ── Dominio → JPA ────────────────────────────────────────────────────────
-
     public TransactionJpaEntity toJpaEntity(Transaction domain,
                                             CustomerJpaEntity customerJpa,
                                             PaymentMethodJpaEntity paymentMethodJpa) {
@@ -43,8 +41,6 @@ public class TransactionMapper {
                 .secondLastName(domain.getSecondLastName())
                 .build();
     }
-
-    // ── JPA → Dominio ────────────────────────────────────────────────────────
 
     public Transaction toDomain(TransactionJpaEntity jpa) {
         return Transaction.builder()
