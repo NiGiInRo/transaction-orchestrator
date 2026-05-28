@@ -1,0 +1,82 @@
+@startuml component-diagram
+!theme plain
+skinparam linetype ortho
+skinparam roundcorner 8
+skinparam ArrowColor #555
+skinparam ArrowThickness 1.5
+skinparam defaultFontName Arial
+
+title Transaction Orchestrator — Diagrama de Componentes
+
+' ─────────────────────────────────────────────
+'  CLIENTE EXTERNO
+' ─────────────────────────────────────────────
+
+actor "Cliente HTTP\n(Postman / Sistema externo)" as client #LightYellow
+
+' ─────────────────────────────────────────────
+'  INFRAESTRUCTURA — ENTRADA
+' ─────────────────────────────────────────────
+
+package "Infrastructure — Adapter IN" #E3F2FD {
+    component "TransactionController\nPOST /v1/transactions\nGET  /v1/transactions/{id}" as controller
+    component "GlobalExceptionHandler\n@RestControllerAdvice" as handler
+}
+
+' ─────────────────────────────────────────────
+'  APLICACIÓN
+' ─────────────────────────────────────────────
+
+package "Application" #E8F5E9 {
+    component "CreateTransactionUseCaseImpl" as createUC
+    component "GetTransactionUseCaseImpl" as getUC
+}
+
+' ─────────────────────────────────────────────
+'  DOMINIO
+' ─────────────────────────────────────────────
+
+package "Domain" #FFF8E1 {
+    interface "CreateTransactionUseCase" as createPort
+    interface "GetTransactionUseCase" as getPort
+    interface "TransactionRepositoryPort" as repoPort
+    interface "PaymentProviderPort" as providerPort
+
+    component "Transaction\nCustomer\nPaymentMethod" as models
+    component "ValidationException\nTransactionNotFoundException" as exceptions
+}
+
+' ─────────────────────────────────────────────
+'  INFRAESTRUCTURA — SALIDA
+' ─────────────────────────────────────────────
+
+package "Infrastructure — Adapter OUT" #FCE4EC {
+    component "TransactionRepositoryAdapter\n+ TransactionMapper\n+ SpringTransactionRepository" as repoAdapter
+    component "MockPaymentProviderAdapter" as providerAdapter
+    database "H2 / PostgreSQL" as db
+}
+
+' ─────────────────────────────────────────────
+'  RELACIONES
+' ─────────────────────────────────────────────
+
+client       --> controller      : HTTP Request
+controller   --> handler         : excepciones
+controller   ..> createPort      : usa
+controller   ..> getPort         : usa
+
+createPort   <|.. createUC       : implementa
+getPort      <|.. getUC          : implementa
+
+createUC     ..> repoPort        : usa
+createUC     ..> providerPort    : usa
+getUC        ..> repoPort        : usa
+
+repoPort     <|.. repoAdapter    : implementa
+providerPort <|.. providerAdapter: implementa
+
+repoAdapter  --> db              : JPA
+createUC     ..> models          : opera sobre
+createUC     ..> exceptions      : lanza
+
+@enduml
