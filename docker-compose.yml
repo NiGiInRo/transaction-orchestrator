@@ -14,7 +14,7 @@ services:
       db:
         condition: service_healthy
     networks:
-      - tumipay-net
+      - orchestrator-net
 
   db:
     image: postgres:16-alpine
@@ -34,7 +34,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - tumipay-net
+      - orchestrator-net
 
   sonarqube:
     image: sonarqube:10-community
@@ -52,7 +52,7 @@ services:
       - sonar-data:/opt/sonarqube/data
       - sonar-logs:/opt/sonarqube/logs
     networks:
-      - tumipay-net
+      - orchestrator-net
 
   sonar-db:
     image: postgres:16-alpine
@@ -69,7 +69,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - tumipay-net
+      - orchestrator-net
 
 volumes:
   postgres-data:
@@ -78,5 +78,5 @@ volumes:
   sonar-db-data:
 
 networks:
-  tumipay-net:
+  orchestrator-net:
     driver: bridge
