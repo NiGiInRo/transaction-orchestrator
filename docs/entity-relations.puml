@@ -1,0 +1,90 @@
+@startuml entity-relations
+!theme plain
+skinparam linetype ortho
+skinparam roundcorner 8
+skinparam tableBorderColor #555
+skinparam tableBackgroundColor #FAFAFA
+skinparam tableHeaderBackgroundColor #E8F4FD
+skinparam ArrowColor #555
+skinparam ArrowThickness 1.5
+
+title Transaction Orchestrator — Modelo Relacional
+
+' ─────────────────────────────────────────────
+'  ENUMS (referencia conceptual)
+' ─────────────────────────────────────────────
+
+package "Enums (dominio)" #FFF8E1 {
+
+  enum TransactionStatus {
+    PENDING
+    APPROVED
+    REJECTED
+    FAILED
+  }
+
+  enum DocumentType {
+    CC
+    NIT
+    PASSPORT
+    CE
+  }
+}
+
+' ─────────────────────────────────────────────
+'  TABLAS
+' ─────────────────────────────────────────────
+
+entity "payment_methods" as pm {
+  * id            : VARCHAR(50)  <<PK>>
+  --
+  * name          : VARCHAR(100)
+  * enabled       : BOOLEAN
+}
+
+entity "customers" as c {
+  * id             : UUID         <<PK>>
+  --
+  * document_type  : VARCHAR(20)  <<FK→DocumentType>>
+  * document_number: VARCHAR(30)
+  * country_code   : VARCHAR(10)
+  * phone          : VARCHAR(20)
+  * email          : VARCHAR(150)
+  * first_name     : VARCHAR(80)
+    middle_name    : VARCHAR(80)
+  * last_name      : VARCHAR(80)
+    second_last_name: VARCHAR(80)
+}
+
+entity "transactions" as t {
+  * id                   : UUID          <<PK>>
+  --
+  * client_transaction_id: VARCHAR(100)
+  * amount               : BIGINT
+  * currency             : VARCHAR(3)
+  * country              : VARCHAR(2)
+  * payment_method_id    : VARCHAR(50)   <<FK→payment_methods>>
+  * customer_id          : UUID          <<FK→customers>>
+  * webhook_url          : VARCHAR(500)
+  * redirect_url         : VARCHAR(500)
+    description          : VARCHAR(255)
+    expiration_time      : TIMESTAMP
+  * status               : VARCHAR(20)   <<FK→TransactionStatus>>
+  * processed_at         : TIMESTAMP
+}
+
+' ─────────────────────────────────────────────
+'  RELACIONES
+' ─────────────────────────────────────────────
+
+' Un cliente puede tener muchas transacciones
+c ||--o{ t : "tiene"
+
+' Un método de pago puede usarse en muchas transacciones
+pm ||--o{ t : "utilizado en"
+
+' Referencia conceptual de enums
+TransactionStatus ..> t : <<status>>
+DocumentType      ..> c : <<document_type>>
+
+@enduml
