@@ -3,6 +3,7 @@ package com.nicolasdev.transactionorchestrator.infrastructure.adapter.out.persis
 import com.nicolasdev.transactionorchestrator.domain.model.TransactionStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.domain.Persistable;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -14,12 +15,26 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionJpaEntity {
+public class TransactionJpaEntity implements Persistable<UUID> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
+
+    @Transient
+    @Builder.Default
+    private boolean isNew = true;
+
+    @PostPersist
+    @PostLoad
+    void markNotNew() {
+        this.isNew = false;
+    }
+
+    @Override
+    public boolean isNew() {
+        return isNew;
+    }
 
     @Column(name = "client_transaction_id", nullable = false, length = 100)
     private String clientTransactionId;
