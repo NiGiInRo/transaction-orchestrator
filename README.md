@@ -1,6 +1,6 @@
 # Transaction Orchestrator
 
-![CI Pipeline](https://github.com/nicolasdev/transaction-orchestrator/actions/workflows/ci.yml/badge.svg?branch=main)
+![CI Pipeline](https://github.com/NiGilnRo/transaction-orchestrator/actions/workflows/ci.yml/badge.svg?branch=main)
 
 Microservicio orquestador de transacciones de pago desarrollado con Java 21, Spring Boot 3 y arquitectura hexagonal (Ports & Adapters).
 
@@ -15,7 +15,7 @@ Microservicio orquestador de transacciones de pago desarrollado con Java 21, Spr
 Usa H2 en memoria — no requiere base de datos externa.
 
 ```bash
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
 | Recurso | URL |
@@ -37,7 +37,7 @@ export DB_URL=jdbc:postgresql://host:5432/transactiondb
 export DB_USER=usuario
 export DB_PASSWORD=contraseña
 
-mvn spring-boot:run -Dspring-boot.run.profiles=prod
+./mvnw spring-boot:run -Dspring-boot.run.profiles=prod
 ```
 
 > En prod el esquema **no se crea automáticamente** (`ddl-auto: none`). Ejecutar el script SQL manualmente antes del primer arranque:
